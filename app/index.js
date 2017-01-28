@@ -40,16 +40,24 @@ var ThundrModuleGenerator = yeoman.generators.Base.extend({
     		message: 'What is the base package of this module (i.e. com.you.module)?'
     	});
     }
+    if(!this.config.get('javaVersion')){
+    	prompts.push({
+    		name: 'javaVersion',
+    		message: 'What is the java version for this module (i.e. 7, 8, 9)?'
+    	});
+    }
 
     this.prompt(prompts, function (props) {
       this.name = props.name || this.config.get('name');
       this.pkg = props.pkg || this.config.get('pkg');
+      this.javaVersion = props.javaVersion || this.config.get('javaVersion');
       
       this.javaModule = _.capitalize(_.camelize(this.name));
       this.filSystemPkg = this.pkg.replace(/\./g, '/'); 
       
       this.config.set('name', this.name);
-      this.config.set('basePkg', this.basePkg);
+      this.config.set('pkg', this.pkg);
+      this.config.set('javaVersion', this.javaVersion);
       this.config.save();
       done();
     }.bind(this));
@@ -59,6 +67,7 @@ var ThundrModuleGenerator = yeoman.generators.Base.extend({
 	  
 	this.copy('gitignore', '.gitignore');
 	this.template('_pom.xml', 'pom.xml');
+	this.template('_java-version', '.java-version');
 	this.mkdir("src/main/resource/");
 	this.mkdir("src/main/java/"+this.filSystemPkg);
 	this.mkdir("src/test/java/"+this.filSystemPkg);
